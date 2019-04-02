@@ -429,17 +429,6 @@ static char mhi_uci_client_name[MHI_SOFTWARE_CLIENT_LIMIT]
 	if (_msg_lvl >= mhi_uci_msg_lvl) { \
 		pr_err("[%s] "_msg, __func__, ##__VA_ARGS__); \
 	} \
-	if (mhi_uci_ipc_log && (idx >= MHI_UCI_DEFAULT_LOG_MSK) &&\
-			(_msg_lvl >= mhi_uci_ipc_log_lvl)) { \
-		ipc_log_string(mhi_uci_ipc_log,                     \
-			"[%s] " _msg, __func__, ##__VA_ARGS__);     \
-	} \
-	else if (idx < MHI_UCI_DEFAULT_LOG_MSK &&\
-			mhi_uci_clnt_ipc_log[idx] &&\
-			(_msg_lvl >= mhi_uci_ipc_log_lvl)) { \
-		ipc_log_string(mhi_uci_clnt_ipc_log[idx],                     \
-			"[%s] " _msg, __func__, ##__VA_ARGS__);     \
-	} \
 } while (0)
 
 

@@ -975,6 +975,7 @@ static void wcd_cntl_sysfs_remove(struct wcd_dsp_cntl *cntl)
 	kobject_put(&cntl->wcd_kobj);
 }
 
+#ifdef CONFIG_DEBUG_FS
 static void wcd_cntl_debugfs_init(char *dir, struct wcd_dsp_cntl *cntl)
 {
 	struct snd_soc_codec *codec = cntl->codec;
@@ -1004,6 +1005,7 @@ static void wcd_cntl_debugfs_remove(struct wcd_dsp_cntl *cntl)
 	if (cntl)
 		debugfs_remove(cntl->entry);
 }
+#endif
 
 static int wcd_miscdev_release(struct inode *inode, struct file *filep)
 {
@@ -1064,6 +1066,7 @@ static ssize_t wcd_miscdev_write(struct file *filep, const char __user *ubuf,
 		}
 		cntl->boot_reqs--;
 		vote = false;
+#ifdef CONFIG_DEBUG_FS
 	} else if (!strcmp(val, "DEBUG_DUMP")) {
 		if (cntl->dbg_dmp_enable) {
 			dev_dbg(cntl->codec->dev,
@@ -1076,6 +1079,7 @@ static ssize_t wcd_miscdev_write(struct file *filep, const char __user *ubuf,
 		 * if dbg_dump_enable is not set from debugfs
 		 */
 		goto done;
+#endif
 	} else {
 		dev_err(cntl->codec->dev, "%s: Invalid value %s\n",
 			__func__, val);
@@ -1270,7 +1274,9 @@ static int wcd_ctrl_component_bind(struct device *dev,
 		goto err_sysfs_init;
 	}
 
+#ifdef CONFIG_DEBUG_FS
 	wcd_cntl_debugfs_init(wcd_cntl_dir_name, cntl);
+#endif
 
 	codec = cntl->codec;
 	card = codec->component.card->snd_card;
@@ -1330,8 +1336,10 @@ static void wcd_ctrl_component_unbind(struct device *dev,
 	/* Remove the sysfs entries */
 	wcd_cntl_sysfs_remove(cntl);
 
+#ifdef CONFIG_DEBUG_FS
 	/* Remove the debugfs entries */
 	wcd_cntl_debugfs_remove(cntl);
+#endif
 
 	/* Remove the misc device */
 	wcd_cntl_miscdev_destroy(cntl);

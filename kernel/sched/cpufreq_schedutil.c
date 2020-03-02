@@ -253,19 +253,11 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 #ifdef CONFIG_SCHED_KAIR_GLUE
 	legacy_freq = freq;
 
-	if (sg_policy->tunables->fb_legacy)
-		goto skip_betting;
-
 #ifndef KAIR_CLUSTER_TRAVERSING
 	sg_cpu = &per_cpu(sugov_cpu, policy->cpu);
 	vessel = sg_cpu->util_vessel;
 
-	if (!vessel)
-		goto skip_betting;
-
 	cur_rand = vessel->job_inferer(vessel);
-	if (cur_rand == KAIR_DIVERGING)
-		goto skip_betting;
 #else
 	for_each_cpu(each, policy->cpus) {
 		sg_cpu = &per_cpu(sugov_cpu, each);
@@ -273,16 +265,13 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 		vessel = sg_cpu->util_vessel;
 		if (vessel) {
 			cur_rand = vessel->job_inferer(vessel);
-			if (cur_rand == KAIR_DIVERGING)
-				goto skip_betting;
-			else {
+			if (cur_rand != KAIR_DIVERGING) {
 				if (cur_rand > (int)most_rand) {
 					most_rand = (randomness)cur_rand;
 					sigma_cpu = each;
 				}
 			}
-		} else
-			goto skip_betting;
+		}
 	}
 
 	sg_cpu	= &per_cpu(sugov_cpu, sigma_cpu);
@@ -294,11 +283,6 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 
 	RV_SET(rv, util_delta, delta_max, delta_min);
 	freq = vessel->cap_bettor(vessel, &rv, freq);
-
-skip_betting:
-	trace_sugov_kair_freq(policy->cpu, util, max, cur_rand, legacy_freq, freq);
-#else
-	trace_sugov_next_freq(policy->cpu, util, max, freq);
 #endif
 
 	if (freq == sg_policy->cached_raw_freq && !sg_policy->need_freq_update)
@@ -993,7 +977,6 @@ static void sugov_limits(struct cpufreq_policy *policy)
 	struct sugov_policy *sg_policy = policy->governor_data;
 	unsigned long flags;
 	unsigned int ret;
-	int cpu;
 
 	if (!policy->fast_switch_enabled) {
 		mutex_lock(&sg_policy->work_lock);
@@ -1004,8 +987,6 @@ static void sugov_limits(struct cpufreq_policy *policy)
 		ret = cpufreq_policy_apply_limits_fast(policy);
 		if (ret && policy->cur != ret) {
 			policy->cur = ret;
-			for_each_cpu(cpu, policy->cpus)
-				trace_cpu_frequency(ret, cpu);
 		}
 		raw_spin_unlock_irqrestore(&sg_policy->update_lock, flags);
 	}

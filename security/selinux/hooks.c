@@ -209,7 +209,7 @@ int selinux_enforcing;
 // CONFIG_RKP_KDP
 int selinux_enforcing_boot __kdp_ro;
 #else
-int selinux_enforcing_boot __rticdata;
+int selinux_enforcing_boot;
 #endif
 // ] SEC_SELINUX_PORTING_COMMON
 

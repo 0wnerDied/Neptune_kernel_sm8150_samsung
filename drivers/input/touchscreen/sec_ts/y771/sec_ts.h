@@ -31,6 +31,7 @@
 #include <linux/module.h>
 #include <linux/of_gpio.h>
 #include <linux/platform_device.h>
+#include <linux/pm_qos.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/time.h>
@@ -40,6 +41,8 @@
 #include <linux/workqueue.h>
 #include <linux/power_supply.h>
 #include <linux/sec_ts_common.h>
+
+#include <linux/i2c-qcom-geni.h>
 
 #if defined(CONFIG_TRUSTONIC_TRUSTED_UI_QC)
 #include <linux/input/tui_hal_ts.h>
@@ -676,6 +679,9 @@ struct sec_ts_data {
 
 	int nv;
 	int disassemble_count;
+
+	struct pm_qos_request pm_i2c_req;
+	struct pm_qos_request pm_touch_req;
 
 	struct delayed_work work_read_info;
 	struct delayed_work work_print_info;

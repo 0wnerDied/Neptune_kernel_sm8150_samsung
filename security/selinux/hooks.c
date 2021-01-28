@@ -193,7 +193,7 @@ u32 rkp_get_offset_bp_cred(void)
 #endif  /* CONFIG_RKP_KDP */
 
 
-struct selinux_state selinux_state __rticdata;
+struct selinux_state selinux_state;
 
 /* SECMARK reference count */
 static atomic_t selinux_secmark_refcount = ATOMIC_INIT(0);
@@ -209,7 +209,7 @@ int selinux_enforcing;
 // CONFIG_RKP_KDP
 int selinux_enforcing_boot __kdp_ro;
 #else
-int selinux_enforcing_boot;
+int selinux_enforcing_boot __rticdata;
 #endif
 // ] SEC_SELINUX_PORTING_COMMON
 

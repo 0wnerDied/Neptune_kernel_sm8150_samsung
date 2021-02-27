@@ -170,11 +170,14 @@ static int print_mem_entry(void *data, void *ptr)
 #if defined(CONFIG_DISPLAY_SAMSUNG) && !defined(CONFIG_SAMSUNG_PRODUCT_SHIP)
 	seq_printf(s, "%p %p %16llu %5d %9s %10s %16s %5d %16llu %6d %6d",
 			(uint64_t *)(uintptr_t) m->gpuaddr,
-			(unsigned long *) m->useraddr,
-			m->size, entry->id, flags,
+			/*
+			 * Show zero for the useraddr - we can't reliably track
+			 * that value for multiple vmas anyway
+			 */
+			0, m->size, entry->id, flags,
 			memtype_str(usermem_type),
 			usage, (m->sgt ? m->sgt->nents : 0),
-			(u64)atomic64_read(&m->mapsize),
+			atomic_read(&entry->map_count),
 			egl_surface_count, egl_image_count);
 #else
 	seq_printf(s, "%pK %pK %16llu %5d %9s %10s %16s %5d %16d %6d %6d",

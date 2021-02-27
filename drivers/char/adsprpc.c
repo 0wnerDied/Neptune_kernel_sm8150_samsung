@@ -1939,7 +1939,6 @@ static inline void fastrpc_pm_awake(int fl_wake_enable, bool *pm_awake_voted, in
 
 	if (!fl_wake_enable || *pm_awake_voted)
 		return;
-
 	if (channel_type == SECURE_CHANNEL)
 		__pm_stay_awake(me->wake_source_secure);
 	else if (channel_type == NON_SECURE_CHANNEL)
@@ -1953,7 +1952,6 @@ static inline void fastrpc_pm_relax(bool *pm_awake_voted, int channel_type)
 
 	if (!(*pm_awake_voted))
 		return;
-
 	if (channel_type == SECURE_CHANNEL)
 		__pm_relax(me->wake_source_secure);
 	else if (channel_type == NON_SECURE_CHANNEL)
@@ -3914,6 +3912,8 @@ static const struct of_device_id fastrpc_match_table[] = {
 	{ .compatible = "qcom,msm-fastrpc-adsp", },
 	{ .compatible = "qcom,msm-fastrpc-compute", },
 	{ .compatible = "qcom,msm-fastrpc-compute-cb", },
+	{ .compatible = "qcom,msm-fastrpc-legacy-compute", },
+	{ .compatible = "qcom,msm-fastrpc-legacy-compute-cb", },
 	{ .compatible = "qcom,msm-adsprpc-mem-region", },
 	{}
 };
@@ -4625,6 +4625,8 @@ static void __exit fastrpc_device_exit(void)
 		unregister_rpmsg_driver(&fastrpc_rpmsg_client);
 	if (me->wake_source)
 		wakeup_source_unregister(me->wake_source);
+	if (me->wake_source_secure)
+		wakeup_source_unregister(me->wake_source_secure);
 	debugfs_remove_recursive(debugfs_root);
 }
 

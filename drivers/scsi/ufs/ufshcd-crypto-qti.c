@@ -111,8 +111,9 @@ static int ufshcd_crypto_qti_keyslot_program(struct keyslot_manager *ksm,
 		pr_err("%s: failed with error %d\n", __func__, err);
 
 	ufshcd_release(hba, false);
+
 out:
-		return err;
+	return err;
 }
 
 static int ufshcd_crypto_qti_keyslot_evict(struct keyslot_manager *ksm,

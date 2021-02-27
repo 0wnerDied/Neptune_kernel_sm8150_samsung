@@ -35,6 +35,8 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len);
 
 int qrtr_peek_pkt_size(const void *data);
 
+int qrtr_get_header_size(const void *data);
+
 #ifndef __IPC_SUB_IOCTL
 #define __IPC_SUB_IOCTL
 

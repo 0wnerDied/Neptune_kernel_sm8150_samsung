@@ -26,6 +26,20 @@
 			};
 		};
 	};
+
+	subsys_backup: qcom,subsys-backup {
+		compatible = "qcom,subsys-backup";
+		qcom,buf-size = <0x600000>;
+		memory-region = <&subsys_backup_region>;
+	};
+};
+
+&reserved_mem {
+	subsys_backup_region: subsys_backup_region {
+		compatible = "shared-dma-pool";
+		reusable;
+		size = <0xC00000>;
+	};
 };
 
 /* delete pm8150b nodes */
@@ -504,5 +518,18 @@
 		st,drdy-int-pin= <2>;
 		qcom,regulator_check = <0>; /* 0:Disable 1:Enable */
 		qcom,asm330_hrtimer;
+	};
+};
+
+&ipa_hw {
+	qcom,ipa-config-is-sa;
+};
+
+&soc {
+	qcom,msm-imem@1468F000 {
+		dload_type@18 {
+			compatible = "qcom,msm-imem-dload-type";
+			reg = <0x18 0x4>;
+		};
 	};
 };

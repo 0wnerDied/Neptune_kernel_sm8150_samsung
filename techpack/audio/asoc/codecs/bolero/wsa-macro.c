@@ -2124,6 +2124,8 @@ static int wsa_macro_rx_mux_put(struct snd_kcontrol *kcontrol,
 	wsa_priv->rx_port_value[widget->shift] = rx_port_value;
 
 	bit_input = widget->shift;
+	if (widget->shift >= WSA_MACRO_RX_MIX)
+		bit_input %= WSA_MACRO_RX_MIX;
 
 	dev_dbg(wsa_dev,
 		"%s: mux input: %d, mux output: %d, bit: %d\n",

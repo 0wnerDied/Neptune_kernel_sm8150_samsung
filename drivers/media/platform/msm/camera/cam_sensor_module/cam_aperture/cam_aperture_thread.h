@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -9,12 +9,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#ifndef _CAM_APERTURE_THREAD_H_
+#define _CAM_APERTURE_THREAD_H_
 
-#ifndef _CAM_IR_LED_CORE_H_
-#define _CAM_IR_LED_CORE_H_
-#include "cam_ir_led_dev.h"
+#include "cam_aperture_dev.h"
 
-void cam_ir_led_shutdown(struct cam_ir_led_ctrl *ir_led_ctrl);
-int cam_ir_led_stop_dev(struct cam_ir_led_ctrl *ir_led_ctrl);
-int cam_ir_led_release_dev(struct cam_ir_led_ctrl *fctrl);
-#endif /*_CAM_IR_LED_CORE_H_*/
+int cam_aperture_thread_add_msg(struct cam_aperture_ctrl_t *a_ctrl, struct cam_aperture_thread_msg_t *msg);
+int cam_aperture_thread_create(struct cam_aperture_ctrl_t *a_ctrl);
+int cam_aperture_thread_destroy(struct cam_aperture_ctrl_t *a_ctrl);
+
+#endif
+/* _CAM_APERTURE_THREAD_H_ */

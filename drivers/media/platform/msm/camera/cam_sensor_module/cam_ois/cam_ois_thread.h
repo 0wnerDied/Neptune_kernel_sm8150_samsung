@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -9,14 +9,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#ifndef _CAM_OIS_THREAD_H_
+#define _CAM_OIS_THREAD_H_
 
-#ifndef _CAM_CSID_PPI_DEV_H_
-#define _CAM_CSID_PPI_DEV_H_
+#include "cam_ois_dev.h"
 
-#include "cam_isp_hw.h"
+int cam_ois_thread_add_msg(struct cam_ois_ctrl_t *o_ctrl, struct cam_ois_thread_msg_t *msg);
+int cam_ois_thread_create(struct cam_ois_ctrl_t *o_ctrl);
+int cam_ois_thread_destroy(struct cam_ois_ctrl_t *o_ctrl);
 
-irqreturn_t cam_csid_ppi_irq(int irq_num, void *data);
-int cam_csid_ppi_probe(struct platform_device *pdev);
-int cam_csid_ppi_remove(struct platform_device *pdev);
-
-#endif /*_CAM_CSID_PPI_DEV_H_ */
+#endif
+/* _CAM_OIS_THREAD_H_ */

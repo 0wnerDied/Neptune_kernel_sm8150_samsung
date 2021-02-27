@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -10,12 +10,17 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _CAM_IR_LED_SOC_H_
-#define _CAM_IR_LED_SOC_H_
+#ifndef _CAM_APERTURE_SOC_H_
+#define _CAM_APERTURE_SOC_H_
 
-#include "cam_ir_led_dev.h"
+#include "cam_aperture_dev.h"
 
-int cam_ir_led_get_dt_data(struct cam_ir_led_ctrl *fctrl,
-	struct cam_hw_soc_info *soc_info);
+/**
+ * @a_ctrl: Aperture ctrl structure
+ *
+ * This API parses aperture device tree
+ */
+int cam_aperture_parse_dt(struct cam_aperture_ctrl_t *a_ctrl,
+	struct device *dev);
 
-#endif /*_CAM_IR_LED_SOC_H_*/
+#endif /* _CAM_APERTURE_SOC_H_ */

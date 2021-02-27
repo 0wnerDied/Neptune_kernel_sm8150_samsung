@@ -54,6 +54,11 @@ struct keyslot_manager {
 	struct device *dev;
 #endif
 
+#ifdef CONFIG_PM
+	/* Device for runtime power management (NULL if none) */
+	struct device *dev;
+#endif
+
 	/* Protects programming and evicting keys from the device */
 	struct rw_semaphore lock;
 
@@ -131,8 +136,60 @@ static inline void keyslot_manager_hw_exit(struct keyslot_manager *ksm)
 }
 
 
+#ifdef CONFIG_PM
+static inline void keyslot_manager_set_dev(struct keyslot_manager *ksm,
+					   struct device *dev)
+{
+	ksm->dev = dev;
+}
+
+/* If there's an underlying device and it's suspended, resume it. */
+static inline void keyslot_manager_pm_get(struct keyslot_manager *ksm)
+{
+	if (ksm->dev)
+		pm_runtime_get_sync(ksm->dev);
+}
+
+static inline void keyslot_manager_pm_put(struct keyslot_manager *ksm)
+{
+	if (ksm->dev)
+		pm_runtime_put_sync(ksm->dev);
+}
+#else /* CONFIG_PM */
+static inline void keyslot_manager_set_dev(struct keyslot_manager *ksm,
+					   struct device *dev)
+{
+}
+
+static inline void keyslot_manager_pm_get(struct keyslot_manager *ksm)
+{
+}
+
+static inline void keyslot_manager_pm_put(struct keyslot_manager *ksm)
+{
+}
+#endif /* !CONFIG_PM */
+
+static inline void keyslot_manager_hw_enter(struct keyslot_manager *ksm)
+{
+	/*
+	 * Calling into the driver requires ksm->lock held and the device
+	 * resumed.  But we must resume the device first, since that can acquire
+	 * and release ksm->lock via keyslot_manager_reprogram_all_keys().
+	 */
+	keyslot_manager_pm_get(ksm);
+	down_write(&ksm->lock);
+}
+
+static inline void keyslot_manager_hw_exit(struct keyslot_manager *ksm)
+{
+	up_write(&ksm->lock);
+	keyslot_manager_pm_put(ksm);
+}
+
 /**
  * keyslot_manager_create() - Create a keyslot manager
+ * @dev: Device for runtime power management (NULL if none)
  * @num_slots: The number of key slots to manage.
  * @ksm_ll_ops: The struct keyslot_mgmt_ll_ops for the device that this keyslot
  *		manager will use to perform operations like programming and
@@ -544,6 +601,7 @@ EXPORT_SYMBOL_GPL(keyslot_manager_destroy);
 
 /**
  * keyslot_manager_create_passthrough() - Create a passthrough keyslot manager
+ * @dev: Device for runtime power management (NULL if none)
  * @ksm_ll_ops: The struct keyslot_mgmt_ll_ops
  * @features: Bitmask of BLK_CRYPTO_FEATURE_* flags
  * @crypto_mode_supported: Bitmasks for supported encryption modes

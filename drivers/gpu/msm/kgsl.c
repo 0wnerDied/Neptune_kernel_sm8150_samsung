@@ -4877,7 +4877,7 @@ kgsl_get_unmapped_area(struct file *file, unsigned long addr,
 
 #if defined(CONFIG_DISPLAY_SAMSUNG)
 		if (IS_ERR_VALUE(val))
-			kgsl_svm_addr_mapping_log(private->pid);
+			kgsl_svm_addr_mapping_log(pid_nr(private->pid));
 #endif
 	}
 

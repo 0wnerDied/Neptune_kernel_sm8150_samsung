@@ -6547,7 +6547,7 @@ CONFIG_DEBUG_ALIGN_RODATA=y
 # PowerManagement Feature
 #
 CONFIG_SEC_PM=y
-CONFIG_SEC_PM_DEBUG=y
+# CONFIG_SEC_PM_DEBUG is not set
 # CONFIG_CORESIGHT is not set
 
 #

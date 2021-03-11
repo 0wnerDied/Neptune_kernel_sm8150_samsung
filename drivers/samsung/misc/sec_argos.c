@@ -28,22 +28,14 @@
 #include <linux/cpumask.h>
 #include <linux/interrupt.h>
 
-#ifdef CONFIG_CPU_FREQ_LIMIT
 #include <linux/cpufreq.h>
+#ifdef CONFIG_CPU_FREQ_LIMIT
 #include <linux/cpufreq_limit.h>
 
 #ifndef CONFIG_CPU_FREQ_LIMIT_USERSPACE
 #define DVFS_ARGOS_ID CFLM_ARGOS
 int set_freq_limit(unsigned long id, unsigned int freq);
 #endif
-
-#else
-#define DVFS_ARGOS_ID	0
-int set_freq_limit(unsigned long id, unsigned int freq)
-{
-	pr_err("%s is not yet implemented\n", __func__);
-	return 0;
-}
 #endif
 
 #define ARGOS_NAME "argos"

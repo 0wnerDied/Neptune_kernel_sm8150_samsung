@@ -236,6 +236,26 @@ enum {
 #endif
 
 int set_freq_limit(unsigned long id, unsigned int freq);
+#else
+enum {
+	DVFS_NO_ID			= 0,
+
+	/* need to update now */
+	DVFS_TOUCH_ID			= 0,
+	DVFS_FINGER_ID			= 0,
+	DVFS_MULTI_TOUCH_ID		= 0,
+	DVFS_ARGOS_ID			= 0,
+#ifdef CONFIG_USB_AUDIO_ENHANCED_DETECT_TIME
+	DVFS_BOOST_HOST_ID		= 0,
+#endif
+	DVFS_MAX_ID
+};
+
+static inline set_freq_limit(unsigned long id, unsigned int freq)
+{
+	pr_err("%s is not yet implemented\n", __func__);
+	return 0;
+}
 #endif
 
 #ifdef CONFIG_CPU_FREQ_STAT

@@ -32,6 +32,7 @@
 
 #include "clk.h"
 
+#ifdef CONFIG_DEBUG_FS
 #define MSM_BUS_VECTOR(_src, _dst, _ab, _ib)	\
 {						\
 	.src = _src,				\
@@ -73,6 +74,7 @@ static struct msm_bus_scale_pdata clk_debugfs_scale_table = {
 };
 
 static uint32_t clk_debugfs_bus_cl_id;
+#endif
 
 #if defined(CONFIG_COMMON_CLK)
 

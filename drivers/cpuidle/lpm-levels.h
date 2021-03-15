@@ -13,8 +13,17 @@
 #include <soc/qcom/pm.h>
 
 #ifdef CONFIG_SEC_PM
+#ifdef CONFIG_QTI_RPM_STATS_LOG
 extern void debug_rpmstats_show(char *annotation);
 extern void debug_masterstats_show(char *annotation);
+#else
+static inline void debug_rpmstats_show(char *annotation)
+{
+}
+static inline void debug_masterstats_show(char *annotation)
+{
+}
+#endif
 #endif
 
 #define NR_LPM_LEVELS 8

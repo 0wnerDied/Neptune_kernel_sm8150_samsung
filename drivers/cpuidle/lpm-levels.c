@@ -1156,7 +1156,7 @@ static int cluster_configure(struct lpm_cluster *cluster, int idx,
 		 *
 		 * move to lpm_suspend_prepare due to BUG in atomic context
 		if (!from_idle) {
-			clock_debug_print_enabled(false);
+			clock_debug_print_enabled(true);
 			regulator_debug_print_enabled();
 		}
 		*/
@@ -1794,7 +1794,7 @@ static int lpm_suspend_prepare(void)
 
 #ifdef CONFIG_SEC_PM
 	regulator_showall_enabled();
-	clock_debug_print_enabled(false);
+	clock_debug_print_enabled(true);
 
 	debug_masterstats_show("entry");
 	debug_rpmstats_show("entry");

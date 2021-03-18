@@ -230,7 +230,6 @@ exit_idle:
  */
 static void do_idle(void)
 {
-	int cpu = smp_processor_id();
 	/*
 	 * If the arch has a polling bit, we maintain an invariant:
 	 *
@@ -248,7 +247,7 @@ static void do_idle(void)
 		check_pgt_cache();
 		rmb();
 
-		if (cpu_is_offline(cpu)) {
+		if (cpu_is_offline(smp_processor_id())) {
 			tick_nohz_idle_stop_tick_protected();
 			cpuhp_report_idle_dead();
 			arch_cpu_idle_dead();
@@ -264,7 +263,7 @@ static void do_idle(void)
 		 * idle as we know that the IPI is going to arrive right away.
 		 */
 		if (cpu_idle_force_poll || tick_check_broadcast_expired() ||
-				is_reserved(cpu)) {
+				is_reserved(smp_processor_id())) {
 			tick_nohz_idle_restart_tick();
 			cpu_idle_poll();
 		} else {

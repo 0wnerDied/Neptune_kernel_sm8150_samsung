@@ -89,7 +89,7 @@ module_param_named(lpm_prediction, lpm_prediction, bool, 0664);
  * bias_hyst sysfs customizing for samsung kernel
  *
  * Change bias_hyst sysfs to update on QoS and get the value from QoS.
- * Variable named bias_hyst is only using for sysfs node write and show.
+ * Variable named bias_hyst is only using for sysfs node show.
  * When selecting power, function is_cpu_biased(int cpu) check value from QoS.
  */
 static uint32_t bias_hyst;
@@ -129,7 +129,7 @@ const struct kernel_param_ops param_ops_bias_hyst = {
 	.get = param_get_bias_hyst,
 };
 
-module_param_cb(bias_hyst, &param_ops_bias_hyst, &bias_hyst, 0664);
+module_param_cb(bias_hyst, &param_ops_bias_hyst, &bias_hyst, 0444);
 
 struct lpm_history {
 	uint32_t resi[MAXSAMPLES];

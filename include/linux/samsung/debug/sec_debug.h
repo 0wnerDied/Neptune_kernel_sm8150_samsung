@@ -319,9 +319,13 @@ extern void sec_debug_update_restart_reason(const char *cmd, const int in_panic,
 /* called @ drivers/soc/qcom/watchdog_v2.c */
 extern void sec_debug_prepare_for_wdog_bark_reset(void);
 
+#if IS_ENABLED(CONFIG_QCOM_WATCHDOG_V2)
 /* implemented @ drivers/soc/qcom/watchdog_v2.c */
 /* called @ kernel/panic.c */
 extern void emerg_pet_watchdog(void);
+#else
+static inline void emerg_pet_watchdog(void) {}
+#endif
 
 /* called @ init/main.c */
 extern char *sec_debug_get_erased_command_line(void);

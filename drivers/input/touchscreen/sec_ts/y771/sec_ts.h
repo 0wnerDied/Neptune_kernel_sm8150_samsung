@@ -29,6 +29,8 @@
 #include <linux/irq.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/msm_drm_notify.h>
+#include <linux/notifier.h>
 #include <linux/of_gpio.h>
 #include <linux/platform_device.h>
 #include <linux/pm_qos.h>
@@ -37,7 +39,6 @@
 #include <linux/time.h>
 #include <linux/uaccess.h>
 #include <linux/vmalloc.h>
-#include <linux/wakelock.h>
 #include <linux/workqueue.h>
 #include <linux/power_supply.h>
 #include <linux/sec_ts_common.h>
@@ -383,6 +384,7 @@ enum grip_set_data {
 
 typedef enum {
 	SEC_TS_STATE_POWER_OFF = 0,
+	SEC_TS_STATE_SUSPEND,
 	SEC_TS_STATE_LPM,
 	SEC_TS_STATE_POWER_ON
 } TOUCH_POWER_MODE;
@@ -452,6 +454,17 @@ typedef enum {
 	SPONGE_EVENT_TYPE_AOD_HOMEKEY_RELEASE	= 0x0D,
 	SPONGE_EVENT_TYPE_AOD_HOMEKEY_RELEASE_NO_HAPTIC	= 0x0E
 } SPONGE_EVENT_TYPE;
+
+enum {
+	SEC_TS_BUS_REF_SCREEN_ON	= 0x01,
+	SEC_TS_BUS_REF_IRQ		= 0x02,
+	SEC_TS_BUS_REF_RESET		= 0x04,
+	SEC_TS_BUS_REF_FW_UPDATE	= 0x08,
+	SEC_TS_BUS_REF_INPUT_DEV	= 0x10,
+	SEC_TS_BUS_REF_READ_INFO	= 0x20,
+	SEC_TS_BUS_REF_SYSFS		= 0x40,
+	SEC_TS_BUS_REF_FORCE_ACTIVE	= 0x80
+};
 
 #define CMD_RESULT_WORD_LEN		10
 
@@ -649,7 +662,6 @@ struct sec_ts_data {
 	struct sec_ts_plat_data *plat_data;
 	struct sec_ts_coordinate coord[MAX_SUPPORT_TOUCH_COUNT + MAX_SUPPORT_HOVER_COUNT];
 
-
 	u8 lowpower_mode;
 	u8 brush_mode;
 	u8 touchable_area;
@@ -657,6 +669,10 @@ struct sec_ts_data {
 	volatile u8 touch_noise_status;
 	volatile bool input_closed;
 	long prox_power_off;
+
+	struct mutex bus_mutex;
+	u16 bus_refmask;
+	struct completion bus_resumed;
 
 	int touch_count;
 	int tx_count;
@@ -683,6 +699,8 @@ struct sec_ts_data {
 	struct pm_qos_request pm_i2c_req;
 	struct pm_qos_request pm_touch_req;
 
+	struct notifier_block notifier;
+
 	struct delayed_work work_read_info;
 	struct delayed_work work_print_info;
 	u32	print_info_cnt_open;
@@ -702,8 +720,10 @@ struct sec_ts_data {
 	struct completion st_irq_received;
 #endif
 #endif
+	struct delayed_work work_fw_update;
+	struct work_struct suspend_work;
+	struct work_struct resume_work;
 	struct completion resume_done;
-	struct wake_lock wakelock;
 	struct sec_cmd_data sec;
 	short *pFrame;
 
@@ -847,6 +867,7 @@ struct sec_ts_plat_data {
 	struct pinctrl *pinctrl;
 
 	int (*power)(void *data, bool on);
+	void (*enable_sync)(bool on);
 	int tsp_icid;
 	int tsp_id;
 
@@ -898,6 +919,8 @@ int sec_ts_firmware_update_on_hidden_menu(struct sec_ts_data *ts, int update_typ
 int sec_ts_glove_mode_enables(struct sec_ts_data *ts, int mode);
 int sec_ts_set_cover_type(struct sec_ts_data *ts, bool enable);
 int sec_ts_wait_for_ready(struct sec_ts_data *ts, unsigned int ack);
+int sec_ts_try_wake(struct sec_ts_data *ts, bool wake_setting);
+int sec_ts_set_bus_ref(struct sec_ts_data *ts, u16 ref, bool enable);
 int sec_ts_fn_init(struct sec_ts_data *ts);
 int sec_ts_read_calibration_report(struct sec_ts_data *ts);
 int sec_ts_fix_tmode(struct sec_ts_data *ts, u8 mode, u8 state);
